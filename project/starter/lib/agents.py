@@ -15,8 +15,11 @@ class AgentState(TypedDict):
     current_tool_calls: Optional[List[ToolCall]]  # Current pending tool calls
     total_tokens: int  # Track the cumulative total
     
+    
 class Agent:
     def __init__(self, 
+                 api_key: str,
+                 base_url: str,
                  model_name: str,
                  instructions: str, 
                  tools: List[Tool] = None,
@@ -25,6 +28,8 @@ class Agent:
         Initialize an Agent
         
         Args:
+            api_key: OpenAI api key
+            base_url: Vocareum URL
             model_name: Name/identifier of the LLM model to use
             instructions: System instructions for the agent
             tools: Optional list of tools available to the agent
@@ -34,6 +39,8 @@ class Agent:
         self.tools = tools if tools else []
         self.model_name = model_name
         self.temperature = temperature
+        self.api_key = api_key
+        self.base_url = base_url
         
         # Initialize memory and state machine
         self.memory = ShortTermMemory()
@@ -59,6 +66,8 @@ class Agent:
         """Step logic: Process the current state through the LLM"""
         # Initialize LLM
         llm = LLM(
+            api_key = self.api_key,
+            base_url = self.base_url,
             model=self.model_name,
             temperature=self.temperature,
             tools=self.tools
